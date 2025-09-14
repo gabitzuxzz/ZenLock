@@ -207,19 +207,31 @@
             accessSpinner.classList.remove('hidden');
             errorMessage.classList.add('hidden');
             
-            // Extract paste ID from input
+            // Extract paste ID from input (supports both /view/{id} and /view/index.html?id=...)
             let pasteId = input;
-            
-            // If it's a full URL, extract the ID
-            if (input.includes('/view/')) {
-                pasteId = input.split('/view/')[1];
-                // Remove any query parameters or fragments
-                pasteId = pasteId.split('?')[0].split('#')[0];
+
+            try {
+                const maybeUrl = new URL(input);
+                const idParam = maybeUrl.searchParams.get('id');
+                if (idParam) {
+                    pasteId = idParam;
+                } else if (maybeUrl.pathname.includes('/view/')) {
+                    pasteId = maybeUrl.pathname.split('/view/')[1].split('/')[0];
+                }
+            } catch (_) {
+                if (input.includes('?id=')) {
+                    const params = new URLSearchParams(input.split('?')[1]);
+                    pasteId = params.get('id') || pasteId;
+                } else if (input.includes('/view/')) {
+                    pasteId = input.split('/view/')[1].split('/')[0];
+                }
             }
-            
-            // Redirect to the paste view page
+
+            pasteId = pasteId.split('?')[0].split('#')[0];
+
+            // Redirect to the paste view page (static-safe)
             setTimeout(() => {
-                window.location.href = `/view/${pasteId}`;
+                window.location.href = `/view/index.html?id=${encodeURIComponent(pasteId)}`;
             }, 800);
         });
 

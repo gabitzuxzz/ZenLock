@@ -93,7 +93,7 @@
                         </svg>
                         <div class="text-sm text-green-700">
                             <p class="font-semibold">Paste created successfully!</p>
-                            <p class="mt-1">Share this link: <span id="pasteLink" class="font-mono break-all"></span></p>
+                            <p class="mt-1">Share this link: <a id="pasteLink" class="font-mono break-all text-green-700 underline" href="#" target="_blank" rel="noopener noreferrer"></a></p>
                             <button onclick="copyPasteLink()" 
                                     class="mt-2 px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors">
                                 Copy Link
@@ -188,8 +188,9 @@
                 if (data.success) {
                     // Show success message with link
                     const currentUrl = window.location.origin;
-                    const fullLink = `${currentUrl}/view/${data.id}`;
+                    const fullLink = `${currentUrl}/view/index.html?id=${data.id}`;
                     pasteLink.textContent = fullLink;
+                    pasteLink.href = fullLink;
                     successMessage.classList.remove('hidden');
                     
                     // Reset form

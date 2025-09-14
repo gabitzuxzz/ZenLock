@@ -118,11 +118,17 @@
     </div>
 
     <script>
-        // Get paste ID from URL
-        const urlPath = window.location.pathname;
-        const pasteId = urlPath.split('/').pop();
+        // Get paste ID from URL: support both ?id=... and /view/{id}
+        const searchParams = new URLSearchParams(window.location.search);
+        let pasteId = searchParams.get('id');
+        if (!pasteId) {
+            const pathMatch = window.location.pathname.match(/\/view\/(.+)$/);
+            if (pathMatch && pathMatch[1] && pathMatch[1] !== 'index.html') {
+                pasteId = pathMatch[1].split('/')[0];
+            }
+        }
 
-        if (!pasteId || pasteId === 'index.html') {
+        if (!pasteId) {
             // No paste ID in URL, redirect to home
             window.location.href = '/';
         }
@@ -171,7 +177,7 @@
 
             try {
                 // Replace with your backend URL when deploying
-                const response = await fetch('/api/getPaste', {
+                const response = await fetch('https://zenserver.onrender.com/api/getPaste', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
